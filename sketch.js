@@ -22,7 +22,7 @@ function draw() {
 
   // Desenha as barras superiores e inferiores
   fill(color(255, 0, 0));
-  noStroke(); // Tira as bordas
+  noStroke();
   rect(0, 0, width, ESPESSURA_BARRA); // Barra superior
   rect(0, height - ESPESSURA_BARRA, width, ESPESSURA_BARRA); // Barra inferior
 
@@ -49,7 +49,7 @@ function draw() {
 function resetarBola() {
   bola = new Bola();
   direcaoBolaX = random([-1, 1]);
-  direcaoBolaY = random([-1, 1]);
+  direcaoBolaY = random([0, 0]);
   bola.definirDirecao(direcaoBolaX, direcaoBolaY);
   moverParaBola = false; // Reseta a lógica de movimento do computador
 }
@@ -102,6 +102,14 @@ class Bola {
         this.y > raquete.y &&
         this.y < raquete.y + raquete.h) {
       this.xSpeed *= -1;
+      // Calcular a posição relativa da colisão na raquete
+      let posicaoColisao = (this.y - raquete.y) / raquete.h; // Posição relativa (0 a 1)
+
+      // Mapeia a posição da colisão para um ângulo
+      let angulo = map(posicaoColisao, 0, 1, -PI / 4, PI / 4); // Mapeia para ângulos entre -45 e 45 graus
+
+      this.xSpeed = this.velocidade * (this.xSpeed > 0 ? 1 : -1); // Mantém a velocidade na direção X
+      this.ySpeed = this.velocidade * sin(angulo); // Atualiza a velocidade na direção Y
       this.aumentarVelocidade(); // Aumenta a velocidade da bola ao colidir
       moverParaBola = true; // Ativa a lógica de movimento em direção à bola ao rebater
     }
@@ -128,7 +136,6 @@ class Raquete {
 
   mostrar() {
     fill(255);
-    noStroke();
     rect(this.x, this.y, this.w, this.h);
   }
 
