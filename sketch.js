@@ -21,7 +21,8 @@ function draw() {
   background(0);
 
   // Desenha as barras superiores e inferiores
-  fill(255);
+  fill(color(255, 0, 0));
+  noStroke(); // Tira as bordas
   rect(0, 0, width, ESPESSURA_BARRA); // Barra superior
   rect(0, height - ESPESSURA_BARRA, width, ESPESSURA_BARRA); // Barra inferior
 
@@ -127,6 +128,7 @@ class Raquete {
 
   mostrar() {
     fill(255);
+    noStroke();
     rect(this.x, this.y, this.w, this.h);
   }
 
