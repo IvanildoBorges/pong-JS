@@ -3,13 +3,18 @@ let velocidadeBola = 4;
 let direcaoBolaX, direcaoBolaY, alvoComputadorY;
 let moverParaBola = false;
 let imagemFundo, imgBola, imgBarraJogador, imgBarraComputador;
-
-
+let bounceSound;  // Variável global para armazenar o som
+let victorySound; // Variável global para armazenar o som da vitória
+let somAtivado = false;  // Estado do som (ativado/desativado)
 const ESPESSURA_BARRA = 5;
 const MARGEM = 2;
 
 function setup() {
   createCanvas(800, 400);
+
+  // Carrega o arquivo de som
+  bounceSound = loadSound("./assets/bounce.mp3");
+  victorySound = loadSound("./assets/victory.mp3");
   
   // Carrega as imagens
   imagemFundo = loadImage("./assets/fundo1.png");
@@ -20,6 +25,25 @@ function setup() {
   resetarBola();
   raqueteJogador = new Raquete(30);
   raqueteComputador = new Raquete(width - 40);
+
+  // Cria um botão para ativar/desativar o som
+  let botaoSom = createButton('Ativar Som');
+  botaoSom.position(10, 10);  // Define a posição do botão
+  botaoSom.mousePressed(toggleSom);  // Define a função a ser chamada ao clicar
+}
+
+function toggleSom() {
+  if (somAtivado) {
+    bounceSound.stop(); // Para o som se estiver tocando
+    victorySound.stop(); // Para o som de vitória se estiver tocando
+    this.html('Ativar Som'); // Altera o texto do botão
+  } else {
+    bounceSound.setVolume(1); // Define o volume máximo
+    bounceSound.play(); // Reproduz o som (inicializa o AudioContext)
+    victorySound.setVolume(1); // Define o volume máximo para o som de vitória
+    this.html('Desativar Som'); // Altera o texto do botão
+  }
+  somAtivado = !somAtivado; // Alterna o estado do som
 }
 
 function draw() {
@@ -58,6 +82,10 @@ function draw() {
 
   // Checa se houve gol
   if (bola.saiuDeBounds()) {
+    // Toca o som de vitória se o som estiver ativado
+    if (somAtivado) {
+      victorySound.play();  // Reproduz o som de vitória
+    }
     resetarBola();
   }
 }
@@ -136,8 +164,17 @@ class Bola {
         this.y > raquete.y &&
         this.y < raquete.y + raquete.h) {
       this.xSpeed *= -1;
+
       // Calcular a posição relativa da colisão na raquete
       let posicaoColisao = (this.y - raquete.y) / raquete.h; // Posição relativa (0 a 1)
+
+      // Toca o som ao colidir com uma raquete se o som estiver ativado
+      if (somAtivado) {
+        if (bounceSound.isPlaying()) {
+          bounceSound.stop();  // Para o som se já estiver tocando
+        }
+        bounceSound.play();  // Reproduz o som
+      }
 
       // Mapeia a posição da colisão para um ângulo
       let angulo = map(posicaoColisao, 0, 1, -PI / 4, PI / 4); // Mapeia para ângulos entre -45 e 45 graus
