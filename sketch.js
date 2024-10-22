@@ -1,19 +1,22 @@
-let bola;
-let raqueteJogador;
-let raqueteComputador;
-let velocidadeBola = 5;
-let direcaoBolaX;
-let direcaoBolaY;
-let alvoComputadorY;
+let bola, raqueteJogador, raqueteComputador;
+let velocidadeBola = 4;
+let direcaoBolaX, direcaoBolaY, alvoComputadorY;
 let moverParaBola = false;
-let imagemFundo;
+let imagemFundo, imgBola, imgBarraJogador, imgBarraComputador;
+
 
 const ESPESSURA_BARRA = 5;
 const MARGEM = 2;
 
 function setup() {
   createCanvas(800, 400);
-  imagemFundo = loadImage("./assets/fundo1.png"); // Carrega a imagem de fundo
+  
+  // Carrega as imagens
+  imagemFundo = loadImage("./assets/fundo1.png");
+  imgBola = loadImage("./assets/bola.png");
+  imgBarraJogador = loadImage("./assets/barra01.png");
+  imgBarraComputador = loadImage("./assets/barra02.png");
+
   resetarBola();
   raqueteJogador = new Raquete(30);
   raqueteComputador = new Raquete(width - 40);
@@ -65,6 +68,7 @@ function resetarBola() {
   direcaoBolaY = random([0, 0]);
   bola.definirDirecao(direcaoBolaX, direcaoBolaY);
   moverParaBola = false; // Reseta a lógica de movimento do computador
+  bola.anguloRotacao = 0;
 }
 
 function moverComputador() {
@@ -85,8 +89,15 @@ class Bola {
   constructor() {
     this.x = width / 2;
     this.y = height / 2;
-    this.size = 20;
+    this.size = 30;
     this.velocidade = velocidadeBola;
+    this.anguloRotacao = 0;  // ângulo de rotação inicial
+  }
+
+  // Definir a rotação com base na velocidade da bola
+  atualizarRotacao() {
+    let velocidadeTotal = sqrt(this.xSpeed * this.xSpeed + this.ySpeed * this.ySpeed);
+    this.anguloRotacao += velocidadeTotal * 0.05;  // Ajuste da velocidade de rotação
   }
 
   definirDirecao(x, y) {
@@ -95,8 +106,18 @@ class Bola {
   }
 
   mostrar() {
-    fill(255);
-    ellipse(this.x, this.y, this.size);
+    let tamanhoEscalado = this.size * 0.5;  // Escala para metade
+
+    // Atualiza a rotação com base na velocidade
+    this.atualizarRotacao();
+
+    // Centraliza o ponto de rotação e desenha a bola rotacionada
+    push();
+    translate(this.x, this.y);  // Translada para a posição da bola
+    rotate(this.anguloRotacao); // Aplica a rotação com base no ângulo
+    imageMode(CENTER);          // Define o modo de desenho com a imagem centralizada
+    image(imgBola, 0, 0, tamanhoEscalado, tamanhoEscalado);  // Desenha a bola rotacionada
+    pop();
   }
 
   mover() {
@@ -143,13 +164,21 @@ class Raquete {
   constructor(x) {
     this.x = x;
     this.y = height / 2 - 50;
-    this.w = 10;
+    this.w = 15;
     this.h = 100;
   }
 
   mostrar() {
-    fill(255);
-    rect(this.x, this.y, this.w, this.h);
+    let alturaEscalada = this.h * 0.5;  // Escala para metade
+    let larguraEscalada = this.w * 0.5;  // Escala para metade
+
+    if (this.x < width / 2) {
+      // Desenha a barra do jogador
+      image(imgBarraJogador, this.x, this.y, larguraEscalada * 2, alturaEscalada * 2);  // Escala de volta para largura completa
+    } else {
+      // Desenha a barra do computador
+      image(imgBarraComputador, this.x, this.y, larguraEscalada * 2, alturaEscalada * 2);  // Escala de volta para largura completa
+    }
   }
 
   moverComMouse() {
