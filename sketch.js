@@ -6,22 +6,35 @@ let direcaoBolaX;
 let direcaoBolaY;
 let alvoComputadorY;
 let moverParaBola = false;
+let imagemFundo;
 
 const ESPESSURA_BARRA = 5;
 const MARGEM = 2;
 
 function setup() {
   createCanvas(800, 400);
+  imagemFundo = loadImage("./assets/fundo1.png"); // Carrega a imagem de fundo
   resetarBola();
   raqueteJogador = new Raquete(30);
   raqueteComputador = new Raquete(width - 40);
 }
 
 function draw() {
-  background(0);
+  let imgLargura = imagemFundo.width;  // Largura da imagem
+  let imgAltura = imagemFundo.height;  // Altura da imagem
+  
+  // Cálculo do recorte central da imagem
+  let recorteLargura = imgLargura;  // Mantém a largura da imagem
+  let recorteAltura = imgAltura * (height / width);  // Proporcional ao tamanho do canvas
+  
+  let xRecorte = (imgLargura - recorteLargura) / 2;  // Centraliza horizontalmente
+  let yRecorte = (imgAltura - recorteAltura) / 2;    // Centraliza verticalmente
+
+  // Desenha apenas o centro da imagem no canvas sem distorção
+  image(imagemFundo, 0, 0, width, height, xRecorte, yRecorte, recorteLargura, recorteAltura);
 
   // Desenha as barras superiores e inferiores
-  fill(color(255, 0, 0));
+  fill("#2B3FD6");
   noStroke();
   rect(0, 0, width, ESPESSURA_BARRA); // Barra superior
   rect(0, height - ESPESSURA_BARRA, width, ESPESSURA_BARRA); // Barra inferior
