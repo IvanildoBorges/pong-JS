@@ -8,6 +8,8 @@ let victorySound; // Variável global para armazenar o som da vitória
 let somAtivado = false;  // Estado do som (ativado/desativado)
 const ESPESSURA_BARRA = 5;
 const MARGEM = 2;
+let jogoPausado = false;  // Variável para controlar o estado do jogo
+
 
 function setup() {
   createCanvas(800, 400);
@@ -30,6 +32,11 @@ function setup() {
   let botaoSom = createButton('Ativar Som');
   botaoSom.position(10, 10);  // Define a posição do botão
   botaoSom.mousePressed(toggleSom);  // Define a função a ser chamada ao clicar
+
+  // Cria um botão para pausar o jogo
+  let botaoPausa = createButton('Pausar Jogo');
+  botaoPausa.position(90, 10); // Define a posição do botão
+  botaoPausa.mousePressed(togglePausa); // Define a função a ser chamada ao clicar
 }
 
 function toggleSom() {
@@ -46,7 +53,16 @@ function toggleSom() {
   somAtivado = !somAtivado; // Alterna o estado do som
 }
 
+function togglePausa() {
+  jogoPausado = !jogoPausado; // Alterna o estado do jogo
+  this.html(jogoPausado ? 'Continuar Jogo' : 'Pausar Jogo'); // Altera o texto do botão
+}
+
 function draw() {
+  if (jogoPausado) {
+    return; // Se o jogo estiver pausado, não faz nada
+  }
+
   let imgLargura = imagemFundo.width;  // Largura da imagem
   let imgAltura = imagemFundo.height;  // Altura da imagem
   
