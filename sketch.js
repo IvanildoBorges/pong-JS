@@ -9,10 +9,14 @@ let somAtivado = false;  // Estado do som (ativado/desativado)
 const ESPESSURA_BARRA = 5;
 const MARGEM = 2;
 let jogoPausado = false;  // Variável para controlar o estado do jogo
+let botaoPausar; // Variável para armazenar o botão de pausar
+let larguraCanvas = 800;  // Largura padrão
+let alturaCanvas = 800;   // Altura padrão
 
 
 function setup() {
-  createCanvas(800, 400);
+  let canvas = createCanvas(windowWidth, windowHeight);  // Usa largura e altura da janela
+  canvas.id("canvas"); // Define um ID para o canvas
 
   // Carrega o arquivo de som
   bounceSound = loadSound("./assets/bounce.mp3");
@@ -32,12 +36,45 @@ function setup() {
   let botaoSom = createButton('Ativar Som');
   botaoSom.position(10, 10);  // Define a posição do botão
   botaoSom.mousePressed(toggleSom);  // Define a função a ser chamada ao clicar
+  botaoSom.addClass("botoes__superior");
 
   // Cria um botão para pausar o jogo
-  let botaoPausa = createButton('Pausar Jogo');
-  botaoPausa.position(90, 10); // Define a posição do botão
-  botaoPausa.mousePressed(togglePausa); // Define a função a ser chamada ao clicar
+  botaoPausar = createButton('Pausar Jogo');
+  botaoPausar.position(110, 10); // Define a posição do botão
+  botaoPausar.mousePressed(togglePausa); // Define a função a ser chamada ao clicar
+  botaoPausar.addClass("botoes__superior");
+
+  // Botões de controle de toque
+  let botaoCima = createButton('↑');
+  botaoCima.position(width - 100, height - 80);
+  botaoCima.mousePressed(moverCima);
+  botaoCima.addClass("botoes__de__movimento");
+  
+  let botaoBaixo = createButton('↓');
+  botaoBaixo.position(width - 100, height - 40);
+  botaoBaixo.mousePressed(moverBaixo);
+  botaoBaixo.addClass("botoes__de__movimento");
 }
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);  // Redimensiona o canvas
+}
+
+function checkOrientation() {
+  if (window.innerHeight > window.innerWidth) {
+    // Se a altura for maior que a largura, está em retrato
+    document.body.classList.add("portrait");
+  } else {
+    // Se a largura for maior que a altura, está em paisagem
+    document.body.classList.remove("portrait");
+  }
+}
+
+// Adiciona um listener para mudanças de orientação
+window.addEventListener("resize", checkOrientation);
+
+// Verifica a orientação inicialmente
+checkOrientation();
 
 function toggleSom() {
   if (somAtivado) {
@@ -55,7 +92,33 @@ function toggleSom() {
 
 function togglePausa() {
   jogoPausado = !jogoPausado; // Alterna o estado do jogo
-  this.html(jogoPausado ? 'Continuar Jogo' : 'Pausar Jogo'); // Altera o texto do botão
+  if (jogoPausado) {
+    noLoop(); // Para o loop do draw()
+    botaoPausar.html('Continuar Jogo'); // Altera o texto do botão
+  } else {
+    loop(); // Retorna ao loop do draw()
+    botaoPausar.html('Pausar Jogo'); // Altera o texto do botão
+  }
+}
+
+function keyPressed() {
+  if (key === 'Escape') {
+    togglePausa(); // Pausa o jogo se a tecla Esc for pressionada
+  }
+}
+
+window.addEventListener('popstate', function(event) {
+  togglePausa(); // Pausa o jogo ao pressionar o botão voltar
+});
+
+function moverCima() {
+  raqueteJogador.y -= 20; // Move a raquete para cima
+  raqueteJogador.y = constrain(raqueteJogador.y, ESPESSURA_BARRA + MARGEM, height - raqueteJogador.h - ESPESSURA_BARRA - MARGEM); // Limita o movimento
+}
+
+function moverBaixo() {
+  raqueteJogador.y += 20; // Move a raquete para baixo
+  raqueteJogador.y = constrain(raqueteJogador.y, ESPESSURA_BARRA + MARGEM, height - raqueteJogador.h - ESPESSURA_BARRA - MARGEM); // Limita o movimento
 }
 
 function draw() {

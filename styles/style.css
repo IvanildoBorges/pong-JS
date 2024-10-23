@@ -16,3 +16,51 @@ main {
     width: 100%;
     height: 100%;
 }
+
+.botoes__de__movimento {
+    display: none; /* Oculta os controles */
+}
+
+/* Adicione isso ao seu arquivo CSS ou dentro de uma tag <style> no HTML */
+@media screen and (orientation: portrait) {
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #000; /* Cor de fundo quando em modo retrato */
+    }
+  
+    #canvas {
+      display: none; /* Oculta o canvas */
+    }
+
+    .botoes__superior {
+        display: none; /* Oculta o botões superior */
+    }
+  
+    main .orientation-warning {
+      display: block;
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      background-color: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+    }
+  }
+  
+  @media screen and (orientation: landscape) {
+    #canvas {
+      display: block; /* Exibe o canvas */
+    }
+
+    .botoes__superior {
+        display: block; /* Exibe o canvas */
+    }
+  
+    main .orientation-warning {
+      display: none; /* Oculta a mensagem de orientação */
+    }
+  }
+  
